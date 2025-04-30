@@ -1,4 +1,4 @@
-﻿using OpenGdansk.Model.Ztm;
+﻿using OpenGdansk.Models.Ztm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
