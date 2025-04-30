@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using OpenGdansk.Model.Ztm;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,6 +20,9 @@ namespace OpenGdansk
         public MainWindow()
         {
             InitializeComponent();
+            var service = new Services.DataService();
+            var response = service.GetHeaderAsync(Header.URL_HEADER).GetAwaiter().GetResult();
+
         }
     }
 }
