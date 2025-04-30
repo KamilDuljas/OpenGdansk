@@ -5,8 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OpenGdansk"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
+        Title="OpenGdansk" MinHeight="540" MinWidth="960" WindowStartupLocation="CenterScreen" WindowState="Maximized" Background="WhiteSmoke">
+    <Grid VerticalAlignment="Top">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Image Grid.Column="1" Source="Resources/OpenGdanskLogo.png" Stretch="Uniform" HorizontalAlignment="Right" MaxWidth="250" MaxHeight="250"/>
+        </Grid>
     </Grid>
 </Window>
