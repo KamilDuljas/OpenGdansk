@@ -1,4 +1,5 @@
 ﻿using OpenGdansk.Model.Ztm;
+using OpenGdansk.Services;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,12 +18,18 @@ namespace OpenGdansk
     /// </summary>
     public partial class MainWindow : Window
     {
+        DataService _dataService;
+
         public MainWindow()
         {
             InitializeComponent();
-            var service = new Services.DataService();
-            var response = service.GetHeaderAsync(Header.URL_HEADER).GetAwaiter().GetResult();
+            _dataService = new Services.DataService();
+            Loaded += MainWindow_Loaded;
+        }
 
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+           var response = await _dataService.GetHeaderAsync(Header.URL_HEADER);
         }
     }
 }
