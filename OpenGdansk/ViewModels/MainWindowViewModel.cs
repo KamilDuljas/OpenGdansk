@@ -17,7 +17,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public ICommand? FetchHeaderCommand { get; }
     Header? _header;
     private bool isDataFetched = false;
-
+    RootObject? _rootObject;
     public bool IsDataFetched
     {
         get => isDataFetched;
@@ -49,12 +49,24 @@ public class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    RootObject? RootObject
+    {
+        get => _rootObject;
+        set
+        {
+            _rootObject = value;
+            OnPropertyChanged();
+        }
+    }
+
+
     private readonly DataService dataService = new();
     public MainWindowViewModel()
     {
         FetchHeaderCommand = new RelayCommand(async () => {
             CanFetchData = false;
             Header = await dataService.GetHeaderAsync(Header.URL_HEADER);
+            RootObject = await dataService.GetRootObjectAsync(Header.Description.ApiUrlData);
             IsDataFetched = true;
             await Task.Delay(3000);
             IsDataFetched = false;

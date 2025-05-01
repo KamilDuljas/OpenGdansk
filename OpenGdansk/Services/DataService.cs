@@ -27,5 +27,13 @@ namespace OpenGdansk.Services
                 : JsonSerializer.Deserialize<Header>(response)!;
         }
 
+        public async Task<RootObject> GetRootObjectAsync(string url)
+        {
+            var response = await _httpClient.GetStringAsync(url);
+            return response == null
+                ? throw new InvalidOperationException("Response from GetRootObjectAsync is null!")
+                : JsonSerializer.Deserialize<RootObject>(response)!;
+        }
+
     }
 }
