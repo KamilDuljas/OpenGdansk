@@ -111,7 +111,7 @@ public class Vehicle
 
     [JsonPropertyName("airConditioning")]
     public bool AirConditioning { get; set; }
-        
+
     [JsonPropertyName("monitoring")]
     public bool Monitoring { get; set; }
 
@@ -152,7 +152,21 @@ public class Vehicle
     public int PassengersDoors { get; set; }
 
     [JsonPropertyName("driveType")]
-    public string DriveType { get; set; }
+    public required string DriveType { get; set; }
+
+    public string PhotoUrl { 
+        get 
+        { if (Photo == "no-foto")
+            {
+                return "../Resources/OpenGdanskLogo.png";
+            }
+            else
+            {              
+                return URL_PHOTO + Photo.Split(',')[0] + ".jpg";
+            }
+        }}
+
+    public const string URL_PHOTO = "https://files.cloudgdansk.pl/f/otwarte-dane/ztm/baza-pojazdow/";
 }
 
 public class RootObject
@@ -165,7 +179,4 @@ public class RootObject
 
     [JsonPropertyName("results")]
     public required List<Vehicle> Vehicles { get; set; }
-
-    public const string URL_PHOTO = "https://files.cloudgdansk.pl/f/otwarte-dane/ztm/baza-pojazdow/";
-
 }

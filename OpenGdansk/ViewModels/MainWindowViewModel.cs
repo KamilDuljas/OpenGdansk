@@ -2,6 +2,7 @@
 using OpenGdansk.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -14,6 +15,8 @@ namespace OpenGdansk.ViewModels;
 
 public class MainWindowViewModel : INotifyPropertyChanged
 {
+    Vehicle? _selectedVehicle;
+    ObservableCollection<Vehicle>? _vehicles;
     public ICommand? FetchHeaderCommand { get; }
     Header? _header;
     private bool isDataFetched = false;
@@ -49,7 +52,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    RootObject? RootObject
+    public RootObject? RootObject
     {
         get => _rootObject;
         set
@@ -59,6 +62,25 @@ public class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    public ObservableCollection<Vehicle>? Vehicles
+    {
+        get => _vehicles;
+        set
+        {
+            _vehicles = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Vehicle? SelectedVehicle
+    {
+        get => _selectedVehicle;
+        set
+        {
+            _selectedVehicle = value;
+            OnPropertyChanged();
+        }
+    }
 
     private readonly DataService dataService = new();
     public MainWindowViewModel()
@@ -67,6 +89,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
             CanFetchData = false;
             Header = await dataService.GetHeaderAsync(Header.URL_HEADER);
             RootObject = await dataService.GetRootObjectAsync(Header.Description.ApiUrlData);
+            Vehicles = new ObservableCollection<Vehicle>(RootObject.Vehicles);
             IsDataFetched = true;
             await Task.Delay(3000);
             IsDataFetched = false;
