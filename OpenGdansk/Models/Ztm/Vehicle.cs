@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel;
+using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace OpenGdansk.Models.Ztm;
 
@@ -154,19 +156,36 @@ public class Vehicle
     [JsonPropertyName("driveType")]
     public required string DriveType { get; set; }
 
-    public string PhotoUrl { 
+    public List<string> Photos { 
         get 
-        { if (Photo == "no-foto")
+        {   
+            if(_photos.Count > 0)
             {
-                return "../Resources/OpenGdanskLogo.png";
+                return _photos;
+            }
+            if (Photo == "no-foto")
+            {
+                _photos.Add("../Resources/OpenGdanskLogo.png");
+                return _photos;
             }
             else
-            {              
-                return URL_PHOTO + Photo.Split(',')[0] + ".jpg";
+            {
+                _photos = Photo.Split(',').Select(photo => URL_PHOTO + photo + ".jpg").ToList();
+                return _photos;
             }
         }}
 
-    public const string URL_PHOTO = "https://files.cloudgdansk.pl/f/otwarte-dane/ztm/baza-pojazdow/";
+    public List<KeyValuePair<string, string>> DescriptionList =>
+        this.GetType()
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.CanRead && p.Name != nameof(DescriptionList) && p.Name != nameof(Photos) && p.Name != nameof(Photo))
+            .Select(p => new KeyValuePair<string, string>(
+                p.Name,
+                p.GetValue(this)?.ToString() ?? "(brak)"
+            ))
+            .ToList();
+    private List<string> _photos = [];
+    private const string URL_PHOTO = "https://files.cloudgdansk.pl/f/otwarte-dane/ztm/baza-pojazdow/";
 }
 
 public class RootObject

@@ -1,26 +1,42 @@
 ﻿using OpenGdansk.Models.Ztm;
 using OpenGdansk.Services;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 
 namespace OpenGdansk.ViewModels;
 
 public class MainWindowViewModel : INotifyPropertyChanged
 {
-    Vehicle? _selectedVehicle;
-    ObservableCollection<Vehicle>? _vehicles;
-    public ICommand? FetchHeaderCommand { get; }
-    Header? _header;
+    private Vehicle? _selectedVehicle;
+    private ObservableCollection<Vehicle>? _vehicles;
+    private Header? _header;
     private bool isDataFetched = false;
-    RootObject? _rootObject;
+    private RootObject? _rootObject;
+    private ICommand? _fetchCommand;
+    public ICommand? FetchHeaderCommand
+    {
+        get
+        {
+            if (_fetchCommand == null)
+            {
+                _fetchCommand = new RelayCommand(async () => {
+                    CanFetchData = false;
+                    Header = await dataService.GetHeaderAsync(Header.URL_HEADER);
+                    RootObject = await dataService.GetRootObjectAsync(Header.Description.ApiUrlData);
+                    Vehicles = new ObservableCollection<Vehicle>(RootObject.Vehicles);
+                    IsDataFetched = true;
+                    await Task.Delay(3000);
+                    IsDataFetched = false;
+                    CanFetchData = true;
+                }, () => CanFetchData);
+                return _fetchCommand;
+            }
+            return _fetchCommand;
+        }
+    }
+
     public bool IsDataFetched
     {
         get => isDataFetched;
@@ -79,23 +95,25 @@ public class MainWindowViewModel : INotifyPropertyChanged
         {
             _selectedVehicle = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(SelectedVehiclePhotos));
+            OnPropertyChanged(nameof(SelectedVehicleDescriptionList));
         }
     }
 
-    private readonly DataService dataService = new();
-    public MainWindowViewModel()
+    public List<string>? SelectedVehiclePhotos => SelectedVehicle?.Photos;
+
+    public List<KeyValuePair<string, string>>? SelectedVehicleDescriptionList
     {
-        FetchHeaderCommand = new RelayCommand(async () => {
-            CanFetchData = false;
-            Header = await dataService.GetHeaderAsync(Header.URL_HEADER);
-            RootObject = await dataService.GetRootObjectAsync(Header.Description.ApiUrlData);
-            Vehicles = new ObservableCollection<Vehicle>(RootObject.Vehicles);
-            IsDataFetched = true;
-            await Task.Delay(3000);
-            IsDataFetched = false;
-            CanFetchData = true;
-        }, () => CanFetchData);
+        get
+        {
+            if (SelectedVehicle == null || Header == null)
+                return null;
+            Dictionary<string, string> columnsToLower = Header.ColumnNames.ToDictionary(StringComparer.OrdinalIgnoreCase);
+            return SelectedVehicle?.DescriptionList.Select(_ => new KeyValuePair<string, string>(columnsToLower[_.Key], _.Value)).ToList();
+        }
     }
+    private readonly DataService dataService = new();
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
