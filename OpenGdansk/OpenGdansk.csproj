@@ -10,10 +10,14 @@
 
   <ItemGroup>
     <None Remove="Resources\OpenGdanskLogo.png" />
+    <None Remove="Resources\tram_and_bus.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Resources\OpenGdanskLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\tram_and_bus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

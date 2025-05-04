@@ -17,14 +17,30 @@
         <Grid Grid.Row="0">
             <DockPanel>
                 <Border BorderBrush="DarkRed" DockPanel.Dock="Right" BorderThickness="3">
-                    <Image Source="../Resources/OpenGdanskLogo.png" DockPanel.Dock="Right" Stretch="Uniform" HorizontalAlignment="Right" MaxWidth="250" MaxHeight="250" Width="125"/>
+                    <Image Source="pack://application:,,,/Resources/OpenGdanskLogo.png" DockPanel.Dock="Right" Stretch="Uniform" HorizontalAlignment="Right" MaxWidth="250" MaxHeight="250" Width="125"/>
                 </Border>
                 <Border BorderBrush="DarkRed" DockPanel.Dock="Left" BorderThickness="3">
                     <StackPanel Margin="5">
-                        <Button Margin="0,0,0,10" IsEnabled="{Binding CanFetchData}" Command="{Binding FetchHeaderCommand}" HorizontalAlignment="Center" VerticalAlignment="Top" Height="53" Width="180">
-                            <TextBlock Text="Fetch vehicles from ZTM database" TextWrapping="Wrap" TextAlignment="Center"/>
+                        <Button Margin="0,0,0,10" IsEnabled="{Binding CanFetchData}" Command="{Binding FetchHeaderCommand}" HorizontalAlignment="Center" Height="109" Width="142">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid>
+                                        <Image Source="pack://application:,,,/Resources/tram_and_bus.png" Stretch="Fill"/>
+                                        <Border x:Name="HoverOverlay" Background="Transparent"/>
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="HoverOverlay" Property="Background" Value="#40000000"/>
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter TargetName="HoverOverlay" Property="Background" Value="#80FFFFFF"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <TextBlock Text="{Binding BtnDownloadText}" FontWeight="Bold" TextWrapping="Wrap" TextAlignment="Center" Foreground="{Binding BtnTextColor}"/>
                         </Button>
-                        <Label Content="Dane zostały pobrane!" Foreground="Green" Visibility="{Binding IsDataFetched, Converter={StaticResource BooleanToVis}}" VerticalContentAlignment="Center" FontSize="11" Height="26" Width="130"/>
                     </StackPanel>
                 </Border>
                 <Border BorderBrush="DarkRed" DockPanel.Dock="Bottom" BorderThickness="3">
