@@ -4,17 +4,24 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace OpenGdansk.ViewModels;
 
 public class MainWindowViewModel : INotifyPropertyChanged
 {
+    private const string BTN_DOWNLOAD_TEXT = "Click to download";
+    private const string BTN_DOWNLOADING_TEXT = "Downloading...";
+    private const string BTN_DOWNLOADED_TEXT = "Download complete!";
     private Vehicle? _selectedVehicle;
     private ObservableCollection<Vehicle>? _vehicles;
     private Header? _header;
-    private bool isDataFetched = false;
     private RootObject? _rootObject;
     private ICommand? _fetchCommand;
+    private bool _canFetchData = true;
+    private string _btnDownloadText = BTN_DOWNLOAD_TEXT;
+    private Brush _btnTextColor = Brushes.Black;
+
     public ICommand? FetchHeaderCommand
     {
         get
@@ -23,12 +30,15 @@ public class MainWindowViewModel : INotifyPropertyChanged
             {
                 _fetchCommand = new RelayCommand(async () => {
                     CanFetchData = false;
+                    BtnDownloadText = BTN_DOWNLOADING_TEXT;
                     Header = await dataService.GetHeaderAsync(Header.URL_HEADER);
                     RootObject = await dataService.GetRootObjectAsync(Header.Description.ApiUrlData);
                     Vehicles = new ObservableCollection<Vehicle>(RootObject.Vehicles);
-                    IsDataFetched = true;
+                    BtnDownloadText = BTN_DOWNLOADED_TEXT;
+                    BtnTextColor = Brushes.DarkGreen;
                     await Task.Delay(3000);
-                    IsDataFetched = false;
+                    BtnDownloadText = BTN_DOWNLOAD_TEXT;
+                    BtnTextColor = Brushes.Black;
                     CanFetchData = true;
                 }, () => CanFetchData);
                 return _fetchCommand;
@@ -37,23 +47,32 @@ public class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public bool IsDataFetched
+    public Brush BtnTextColor
     {
-        get => isDataFetched;
+        get => _btnTextColor;
         set
         {
-            isDataFetched = value;
+            _btnTextColor = value;
             OnPropertyChanged();
         }
     }
 
-    private bool canFetchData = true;
-    public bool CanFetchData
+    public string BtnDownloadText
     {
-        get => canFetchData;
+        get => _btnDownloadText;
         set
         {
-            canFetchData = value;
+            _btnDownloadText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool CanFetchData
+    {
+        get => _canFetchData;
+        set
+        {
+            _canFetchData = value;
             OnPropertyChanged();
         }
     }
@@ -109,7 +128,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
             if (SelectedVehicle == null || Header == null)
                 return null;
             Dictionary<string, string> columnsToLower = Header.ColumnNames.ToDictionary(StringComparer.OrdinalIgnoreCase);
-            return SelectedVehicle?.DescriptionList.Select(_ => new KeyValuePair<string, string>(columnsToLower[_.Key], _.Value)).ToList();
+            return SelectedVehicle?.GetDescriptionList().Select(_ => new KeyValuePair<string, string>(columnsToLower[_.Key], _.Value)).ToList();
         }
     }
     private readonly DataService dataService = new();

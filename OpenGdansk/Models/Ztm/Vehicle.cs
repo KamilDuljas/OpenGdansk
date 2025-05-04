@@ -175,15 +175,17 @@ public class Vehicle
             }
         }}
 
-    public List<KeyValuePair<string, string>> DescriptionList =>
-        this.GetType()
+    public List<KeyValuePair<string, string>> GetDescriptionList()
+    {
+        return this.GetType()
             .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.CanRead && p.Name != nameof(DescriptionList) && p.Name != nameof(Photos) && p.Name != nameof(Photo))
+            .Where(p => p.CanRead && p.Name != nameof(Photos) && p.Name != nameof(Photo))
             .Select(p => new KeyValuePair<string, string>(
                 p.Name,
                 p.GetValue(this)?.ToString() ?? "(brak)"
             ))
             .ToList();
+    }
     private List<string> _photos = [];
     private const string URL_PHOTO = "https://files.cloudgdansk.pl/f/otwarte-dane/ztm/baza-pojazdow/";
 }
