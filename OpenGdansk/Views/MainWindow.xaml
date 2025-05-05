@@ -79,24 +79,53 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding SelectedVehiclePhotos}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Margin="10"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Width="Auto" Margin="5">
-                                <Image Source="{Binding}"
-                                    Stretch="Uniform"
-                                    MaxWidth="500"/>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+            <ItemsControl Grid.Column="2" ItemsSource="{Binding SelectedVehiclePhotos}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Margin="10"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Image x:Name="thumbImage"
+                       Source="{Binding}"
+                       Width="500"
+                       Stretch="Uniform">
+                                <Image.RenderTransform>
+                                    <ScaleTransform x:Name="imgScale" ScaleX="1" ScaleY="1"/>
+                                </Image.RenderTransform>
+                            </Image>
+                            <Grid.Triggers>
+                                <EventTrigger SourceName="thumbImage" RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="imgScale"
+                                                 Storyboard.TargetProperty="ScaleX"
+                                                 To="2" Duration="0:0:0.2" />
+                                            <DoubleAnimation Storyboard.TargetName="imgScale"
+                                                 Storyboard.TargetProperty="ScaleY"
+                                                 To="2" Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger SourceName="thumbImage" RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="imgScale"
+            Storyboard.TargetProperty="ScaleX"
+            To="1" Duration="0:0:0.2" />
+                                            <DoubleAnimation Storyboard.TargetName="imgScale"
+            Storyboard.TargetProperty="ScaleY"
+            To="1" Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Grid.Triggers>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </Grid>
     </Grid>
 </Window>
